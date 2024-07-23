@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "drcika.apc-extension",
+    "josemurilloc.aura-spirit-dracula",
+    "dbaeumer.vscode-eslint",
+    "sleistner.vscode-fileutils",
+    "pkief.material-icon-theme",
+    "esbenp.prettier-vscode",
+    "yoavbls.pretty-ts-errors",
+    "bradlc.vscode-tailwindcss",
+    "shardulm94.trailing-spaces",
+    "deinsoftware.vitest-snippets",
+    "vue.volar",
+    "asvetliakov.vscode-neovim"
+  ]
+}
