@@ -9,9 +9,8 @@
     "yoavbls.pretty-ts-errors",
     "bradlc.vscode-tailwindcss",
     "shardulm94.trailing-spaces",
-    "asvetliakov.vscode-neovim",
+    "deinsoftware.vitest-snippets",
     "vue.volar",
-    "hollowtree.vue-snippets",
-    "sdras.vue-vscode-snippets"
+    "asvetliakov.vscode-neovim"
   ]
 }
