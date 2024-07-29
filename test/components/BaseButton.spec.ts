@@ -1,6 +1,4 @@
-// @vitest-environment happy-dom
-
-import { mount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import { expect, it } from 'vitest'
 import BaseButton from '../../src/components/BaseButton.vue'
 import { ButtonType } from '../../src/types'
@@ -9,11 +7,11 @@ it("renders 'primary' button by default", () => {
   const label = 'Label'
   const primaryButtonClasses = 'bg-purple-500 enabled:hover:bg-purple-600 text-white'
 
-  const wrapper = mount(BaseButton, {
+  const wrapper = shallowMount(BaseButton, {
     slots: { default: label }
   })
 
-  expect(wrapper.html()).toContain(label)
+  expect(wrapper.text()).toContain(label)
   expect(wrapper.classes()).toEqual(expect.arrayContaining(primaryButtonClasses.split(' ')))
 })
 
@@ -41,11 +39,11 @@ it.each([
 ])('renders $type button with label', ({ type, classes }) => {
   const label = 'Label'
 
-  const wrapper = mount(BaseButton, {
+  const wrapper = shallowMount(BaseButton, {
     props: { type },
     slots: { default: label }
   })
 
-  expect(wrapper.html()).toContain(label)
+  expect(wrapper.text()).toContain(label)
   expect(wrapper.classes()).toEqual(expect.arrayContaining(classes.split(' ')))
 })
