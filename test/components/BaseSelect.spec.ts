@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { mount, shallowMount } from '@vue/test-utils'
 import { expect, it } from 'vitest'
 import BaseButton from '../../src/components/BaseButton.vue'
 import BaseIcon from '../../src/components/BaseIcon.vue'
@@ -18,6 +18,37 @@ it('renders select with reset button', () => {
   expect(wrapper.findComponent(BaseIcon).vm.name).toBe(IconName.X_MARK)
 })
 
-it.todo('renders select with placeholder')
+it('renders select with placeholder', () => {
+  const placeholder = 'Placeholder'
 
-it.todo('renders select with options')
+  const wrapper = shallowMount(BaseSelect, {
+    props: {
+      placeholder,
+      options: [],
+      selected: null
+    }
+  })
+
+  expect(wrapper.text()).toContain(placeholder)
+})
+
+it('renders select with options', () => {
+  const options = [
+    { value: '1', label: 'Training' },
+    { value: '2', label: 'Reading' },
+    { value: '3', label: 'Coding' }
+  ]
+
+  const wrapper = shallowMount(BaseSelect, {
+    props: {
+      placeholder: '',
+      selected: null,
+      options,
+    }
+  })
+
+  options.forEach(({ value, label }) => {
+    expect(wrapper.find(`option[value=${value}]`).exists()).toBe(true)
+    expect(wrapper.find('select').text()).toContain(label)
+  })
+})
