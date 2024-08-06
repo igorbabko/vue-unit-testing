@@ -5,7 +5,7 @@ import TheActivitiesEmptyState from '../../src/components/TheActivitiesEmptyStat
 it('renders activities empty state', () => {
   const wrapper = shallowMount(TheActivitiesEmptyState)
 
-  expect(wrapper.html()).toContain("You don't have any activities")
+  expect(wrapper.text()).toContain("You don't have any activities")
   expect(wrapper.find('img').attributes()).toMatchObject({
     // toEqual
     src: '/src/assets/img/no_activities.svg',
