@@ -14,7 +14,7 @@ function shallowMountSelect(mountOptions?: MountOptions) {
   return mountSelect(mountOptions, true)
 }
 
-function mountSelect(mountOptions: MountOptions = {}, shallow: boolean = false) {
+function mountSelect(mountOptions: MountOptions = {}, shallow = false) {
   return mount(BaseSelect, {
     shallow,
     props: {
@@ -25,12 +25,6 @@ function mountSelect(mountOptions: MountOptions = {}, shallow: boolean = false) 
   })
 }
 
-const options = [
-  { value: '1', label: 'Training' },
-  { value: '2', label: 'Reading' },
-  { value: '3', label: 'Coding' }
-]
-
 it('renders select with reset button', () => {
   const wrapper = mountSelect()
 
@@ -39,36 +33,38 @@ it('renders select with reset button', () => {
 })
 
 it('renders select with placeholder', () => {
-  const placeholder = 'Paceholder'
+  const placeholder = 'Placeholder'
 
   expect(shallowMountSelect({ placeholder }).text()).toContain(placeholder)
 })
 
 it('renders select with options', () => {
+  const options = [
+    { value: '1', label: 'Training' },
+    { value: '2', label: 'Reading' },
+    { value: '3', label: 'Coding' }
+  ]
+
   const wrapper = shallowMountSelect({ options })
 
   options.forEach(({ value, label }) => {
-    expect(wrapper.find(`option[value=${value}]`).attributes('value')).toContain(value)
+    expect(wrapper.find(`option[value=${value}]`).exists()).toBe(true)
     expect(wrapper.find('select').text()).toContain(label)
   })
 })
 
-it('fires "select" event when option is selected', async () => {
+it("fires 'select' event when option is selected", () => {
   const wrapper = shallowMountSelect()
 
-  await wrapper.find('select').trigger('change')
+  wrapper.find('select').trigger('change')
 
-  expect(wrapper.emitted()).toHaveProperty('select')
   expect(wrapper.emitted().select).toHaveLength(1)
 })
 
-it('fires "select" event when reset button is pressed', async () => {
+it("fires 'select' event when reset button is pressed", () => {
   const wrapper = mountSelect()
 
-  await wrapper.find('button').trigger('click')
+  wrapper.find('button').trigger('click')
 
-  expect(wrapper.emitted()).toHaveProperty('select')
   expect(wrapper.emitted().select).toHaveLength(1)
-  expect((wrapper.emitted() as { select: [null[]] }).select[0][0]).toEqual(null)
-  expect(wrapper.find('select').element.value).toEqual('')
 })

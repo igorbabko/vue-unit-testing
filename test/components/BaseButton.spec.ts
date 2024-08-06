@@ -3,7 +3,7 @@ import { expect, it } from 'vitest'
 import BaseButton from '../../src/components/BaseButton.vue'
 import { ButtonType } from '../../src/types'
 
-it('renders primary button by default', () => {
+it("renders 'primary' button by default", () => {
   const label = 'Label'
   const primaryButtonClasses = 'bg-purple-500 enabled:hover:bg-purple-600 text-white'
 
@@ -36,7 +36,7 @@ it.each([
     type: ButtonType.NEUTRAL,
     classes: 'bg-gray-100 enabled:hover:bg-gray-200'
   }
-])(`renders $type button with label`, ({ type, classes }) => {
+])('renders $type button with label', ({ type, classes }) => {
   const label = 'Label'
 
   const wrapper = shallowMount(BaseButton, {
