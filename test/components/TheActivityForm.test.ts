@@ -1,7 +1,7 @@
-import { mount } from '@vue/test-utils'
+import { mount, shallowMount } from '@vue/test-utils'
 import { expect, it, vi } from 'vitest'
-import TheActivityForm from '../../src/components/TheActivityForm.vue'
 import * as activities from '../../src/activities'
+import TheActivityForm from '../../src/components/TheActivityForm.vue'
 
 it('enables submit button if input is filled', async () => {
   const wrapper = mount(TheActivityForm)
@@ -13,13 +13,13 @@ it('enables submit button if input is filled', async () => {
   expect(wrapper.find('button').attributes('disabled')).toBe(undefined)
 })
 
-it('creates activity when the form is submitted', async () => {
-  const createActivity = vi.spyOn(activities, 'createActivity').mockImplementation(() => {})
-  const wrapper = mount(TheActivityForm)
+it('creates activity after form submission', () => {
+  const createActivity = vi.spyOn(activities, 'createActivity') // .mockImplementation(() => {})
+  const wrapper = shallowMount(TheActivityForm)
   const activityName = 'Reading'
 
-  await wrapper.find('input').setValue(activityName)
-  await wrapper.find('form').trigger('submit')
+  wrapper.find('input').setValue(activityName)
+  wrapper.find('form').trigger('submit')
 
   expect(createActivity).toBeCalledTimes(1)
   expect(createActivity).toBeCalledWith({
@@ -45,7 +45,7 @@ it('disables submit button after form submission', async () => {
 
 it('scrolls page to the top after form submission', async () => {
   const scrollTo = vi.spyOn(window, 'scrollTo')
-  const wrapper = mount(TheActivityForm)
+  const wrapper = shallowMount(TheActivityForm)
 
   await wrapper.find('input').setValue('Reading')
   await wrapper.find('form').trigger('submit')
