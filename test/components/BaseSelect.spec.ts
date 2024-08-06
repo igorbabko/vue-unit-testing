@@ -53,7 +53,7 @@ it('renders select with options', () => {
   })
 })
 
-it('fires "select" event when option is selected', () => {
+it("fires 'select' event when option is selected", () => {
   const wrapper = shallowMountSelect()
 
   wrapper.find('select').trigger('change')
@@ -61,7 +61,7 @@ it('fires "select" event when option is selected', () => {
   expect(wrapper.emitted().select).toHaveLength(1)
 })
 
-it('fires "select" event when reset button is pressed', () => {
+it("fires 'select' event when reset button is pressed", () => {
   const wrapper = mountSelect()
 
   wrapper.find('button').trigger('click')
