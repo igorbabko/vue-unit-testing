@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
-import { afterEach, expect, it, vi } from 'vitest'
+import { afterAll, expect, it, vi } from 'vitest'
 import { computed } from 'vue'
 import BaseIcon from '../../src/components/BaseIcon.vue'
 import TheHeaderProgress from '../../src/components/TheHeaderProgress.vue'
@@ -19,7 +19,7 @@ vi.mock('../../src/composables/total-progress', () => {
 
 // vi.mock('../../src/composables/total-progress')
 
-afterEach(() => {
+afterAll(() => {
   vi.restoreAllMocks()
 })
 
