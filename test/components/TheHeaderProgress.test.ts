@@ -1,4 +1,4 @@
-import { mount, shallowMount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import { afterEach, expect, it, vi } from 'vitest'
 import { computed } from 'vue'
 import BaseIcon from '../../src/components/BaseIcon.vue'
@@ -37,9 +37,8 @@ it('uses proper progress color', () => {
 
 it('navigates to the progress page on click', () => {
   const navigate = vi.spyOn(router, 'navigate')
-  const wrapper = mount(TheHeaderProgress)
 
-  wrapper.trigger('click')
+  shallowMount(TheHeaderProgress).trigger('click')
 
   expect(navigate).toBeCalledTimes(1)
   expect(navigate).toBeCalledWith(PageName.PROGRESS)
