@@ -11,28 +11,32 @@ it('renders logo', () => {
   // expect(wrapper.findComponent(BaseIcon).findComponent(ClockIcon).exists()).toBe(true)
 })
 
-it('has href attribute with timeline page hash', async () => {
+it('has href attribute with timeline page hash', () => {
   expect(shallowMount(TheLogo).attributes('href')).toBe(`#${PageName.TIMELINE}`)
 })
 
-it('scrolls page to the top on click if timeline page is open', async () => {
+it('scrolls page to the top on click if timeline page is open', () => {
   const scrollToCurrentHour = vi.spyOn(timelineItems, 'scrollToCurrentHour')
 
   router.currentPage.value = PageName.TIMELINE
 
-  await shallowMount(TheLogo).trigger('click')
+  shallowMount(TheLogo).trigger('click')
 
   expect(scrollToCurrentHour).toBeCalledTimes(1)
   expect(scrollToCurrentHour).toBeCalledWith(true)
+
+  vi.restoreAllMocks()
 })
 
-it('navigates to timeline page on click if another page is open', async () => {
+it('navigates to timeline page on click if another page is open', () => {
   const navigate = vi.spyOn(router, 'navigate')
 
   router.currentPage.value = PageName.ACTIVITIES
 
-  await shallowMount(TheLogo).trigger('click')
+  shallowMount(TheLogo).trigger('click')
 
   expect(navigate).toBeCalledTimes(1)
   expect(navigate).toBeCalledWith(PageName.TIMELINE)
+
+  vi.restoreAllMocks()
 })
