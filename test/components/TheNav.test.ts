@@ -4,7 +4,7 @@ import NavItem from '../../src/components/NavItem.vue'
 import TheNav from '../../src/components/TheNav.vue'
 import { NAV_ITEMS } from '../../src/constants'
 
-it('renders nav', () => {
+it('has all nav items', () => {
   const wrapper = shallowMount(TheNav)
 
   NAV_ITEMS.forEach((navItem, i) => {
