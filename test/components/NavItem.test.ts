@@ -1,6 +1,5 @@
-import { shallowMount } from '@vue/test-utils'
+import { flushPromises, shallowMount } from '@vue/test-utils'
 import { expect, it, vi } from 'vitest'
-import { nextTick } from 'vue'
 import BaseIcon from '../../src/components/BaseIcon.vue'
 import NavItem from '../../src/components/NavItem.vue'
 import { NAV_ITEMS } from '../../src/constants'
@@ -31,7 +30,7 @@ it('has hover state if nav item does not corresponds to current page', async () 
 
   router.currentPage.value = PageName.ACTIVITIES
 
-  await nextTick()
+  await flushPromises()
 
   expect(wrapper.find('a').classes()).toContain('hover:bg-gray-100')
 })

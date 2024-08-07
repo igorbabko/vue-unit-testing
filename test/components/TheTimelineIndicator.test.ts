@@ -1,6 +1,5 @@
-import { shallowMount } from '@vue/test-utils'
+import { flushPromises, shallowMount } from '@vue/test-utils'
 import { expect, it, vi } from 'vitest'
-import { nextTick } from 'vue'
 import TheTimelineIndicator from '../../src/components/TheTimelineIndicator.vue'
 
 it('has top offset that reflects current time of the day', async () => {
@@ -20,7 +19,7 @@ it('has top offset that reflects current time of the day', async () => {
 
   const wrapper = shallowMount(TheTimelineIndicator)
 
-  await nextTick()
+  await flushPromises()
 
   expect(wrapper.element.style.top).toBe('1608px')
 
