@@ -1,31 +1,31 @@
 import { shallowMount } from '@vue/test-utils'
 import { expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 import BaseIcon from '../../src/components/BaseIcon.vue'
 import NavItem from '../../src/components/NavItem.vue'
 import { NAV_ITEMS } from '../../src/constants'
-import * as timelineItems from '../../src/timeline-items'
-import { PageName } from '../../src/types'
 import * as router from '../../src/router'
-import { nextTick } from 'vue'
+import * as timelineItems from '../../src/timeline-items'
+import { type NavItem as NavItemType, PageName } from '../../src/types'
 
-const navItemProp = NAV_ITEMS[0]
+const timelineNavItem = NAV_ITEMS[0]
+
+function shallowMountNavItem(navItem: NavItemType) {
+  return shallowMount(NavItem, { props: { navItem } })
+}
 
 it('renders nav item', () => {
-  const wrapper = shallowMount(NavItem, {
-    props: { navItem: navItemProp }
-  })
+  const wrapper = shallowMountNavItem(timelineNavItem)
 
-  expect(wrapper.html()).toContain(navItemProp.page)
-  expect(wrapper.findComponent(BaseIcon).vm.name).toEqual(navItemProp.icon)
-  expect(wrapper.find('a').attributes('href')).toBe(`#${navItemProp.page}`)
+  expect(wrapper.text()).toContain(timelineNavItem.page)
+  expect(wrapper.findComponent(BaseIcon).vm.name).toEqual(timelineNavItem.icon)
+  expect(wrapper.find('a').attributes('href')).toBe(`#${timelineNavItem.page}`)
 })
 
-it('does not have hover state if nav item corresponds to current page', async () => {
+it('has hover state if nav item does not corresponds to current page', async () => {
   router.currentPage.value = PageName.TIMELINE
 
-  const wrapper = shallowMount(NavItem, {
-    props: { navItem: navItemProp }
-  })
+  const wrapper = shallowMountNavItem(timelineNavItem)
 
   expect(wrapper.find('a').classes()).not.toContain('hover:bg-gray-100')
 
@@ -36,32 +36,32 @@ it('does not have hover state if nav item corresponds to current page', async ()
   expect(wrapper.find('a').classes()).toContain('hover:bg-gray-100')
 })
 
-it('scrolls to current hour on click if nav item corresponds to timeline page and timeline page is open', async () => {
+it('scrolls to current hour on click if nav item corresponds to timeline page and timeline page is open', () => {
   const scrollToCurrentHour = vi.spyOn(timelineItems, 'scrollToCurrentHour')
 
   router.currentPage.value = PageName.TIMELINE
 
-  const wrapper = shallowMount(NavItem, {
-    props: { navItem: navItemProp }
-  })
+  const wrapper = shallowMountNavItem(timelineNavItem)
 
-  await wrapper.find('a').trigger('click')
+  wrapper.find('a').trigger('click')
 
   expect(scrollToCurrentHour).toBeCalledTimes(1)
   expect(scrollToCurrentHour).toBeCalledWith(true)
+
+  vi.restoreAllMocks()
 })
 
-it('navigates to corresponding page on click', async () => {
+it('navigates to corresponding page on click', () => {
   const navigate = vi.spyOn(router, 'navigate')
 
   router.currentPage.value = PageName.ACTIVITIES
 
-  const wrapper = shallowMount(NavItem, {
-    props: { navItem: navItemProp }
-  })
+  const wrapper = shallowMountNavItem(timelineNavItem)
 
-  await wrapper.find('a').trigger('click')
+  wrapper.find('a').trigger('click')
 
   expect(navigate).toBeCalledTimes(1)
-  expect(navigate).toBeCalledWith(navItemProp.page)
+  expect(navigate).toBeCalledWith(timelineNavItem.page)
+
+  vi.restoreAllMocks()
 })
