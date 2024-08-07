@@ -7,6 +7,7 @@ import BaseIcon from '../../src/components/BaseIcon.vue'
 import BaseSelect from '../../src/components/BaseSelect.vue'
 import RemainingActivitySeconds from '../../src/components/RemainingActivitySeconds.vue'
 import { PERIOD_SELECT_OPTIONS, SECONDS_IN_HOUR, SECONDS_IN_MINUTE } from '../../src/constants'
+import { formatSecondsWithSign } from '../../src/functions'
 import * as timelineItems from '../../src/timeline-items'
 import { ButtonType, IconName } from '../../src/types'
 
@@ -63,12 +64,12 @@ it('updates seconds to complete', async () => {
   const secondsToComplete = SECONDS_IN_MINUTE * 30
   const wrapper = mountActivityItem(SECONDS_IN_HOUR * 1)
 
-  expect(wrapper.text()).toContain('-01:00:00')
+  expect(wrapper.text()).toContain(formatSecondsWithSign(-SECONDS_IN_HOUR * 1))
 
   // await wrapper.find('select').setValue(`${secondsToComplete}`)
   await wrapper.findComponent(BaseSelect as any).vm.$emit('select', secondsToComplete)
 
-  expect(wrapper.text()).toContain('-00:30:00')
+  expect(wrapper.text()).toContain(formatSecondsWithSign(-SECONDS_IN_MINUTE * 30))
   expect(updateActivity).toBeCalledTimes(1)
   expect(updateActivity).toBeCalledWith({ ...activity, secondsToComplete }, { secondsToComplete })
 
