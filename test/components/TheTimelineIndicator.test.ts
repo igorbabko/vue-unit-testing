@@ -3,7 +3,7 @@ import { expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import TheTimelineIndicator from '../../src/components/TheTimelineIndicator.vue'
 
-it('has proper offset', async () => {
+it('has top offset that reflects current time of the day', async () => {
   window.HTMLDivElement.prototype.getBoundingClientRect = vi.fn(() => ({
     x: 0,
     y: -1206,
@@ -24,5 +24,5 @@ it('has proper offset', async () => {
 
   expect(wrapper.element.style.top).toBe('1608px')
 
-  vi.useRealTimers()
+  vi.useRealTimers().restoreAllMocks()
 })
