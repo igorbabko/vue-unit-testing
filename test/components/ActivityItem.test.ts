@@ -11,7 +11,7 @@ const activity = {
   secondsToComplete: SECONDS_IN_HOUR * 1
 }
 
-function mountActivityItem(secondsToComplete) {
+function mountActivityItem(secondsToComplete: number) {
   return mount(ActivityItem, {
     props: {
       activity: { ...activity, secondsToComplete }
@@ -20,10 +20,11 @@ function mountActivityItem(secondsToComplete) {
 }
 
 it('shows activity info', () => {
-  expect(mountActivityItem(SECONDS_IN_HOUR * 1).html())
-    .toContain('Reading')
-    .toContain('-01:00:00')
-    .toContain('01:00')
+  const wrapper = mountActivityItem(SECONDS_IN_HOUR * 1).html()
+
+  expect(wrapper).toContain('Reading')
+  expect(wrapper).toContain('-01:00:00')
+  expect(wrapper).toContain('01:00')
 })
 
 it('does not show seconds to complete if it is 0', () => {
@@ -37,10 +38,10 @@ it('updates seconds to complete', async () => {
 
   await wrapper.find('select').setValue(`${secondsToComplete}`)
 
-  expect(wrapper.html()).toContain('-00:30:00').toContain('00:30')
-  expect(updateActivity)
-    .toBeCalledTimes(1)
-    .toBeCalledWith({ ...activity, secondsToComplete }, { secondsToComplete })
+  expect(wrapper.html()).toContain('-00:30:00')
+  expect(wrapper.html()).toContain('00:30')
+  expect(updateActivity).toBeCalledTimes(1)
+  expect(updateActivity).toBeCalledWith({ ...activity, secondsToComplete }, { secondsToComplete })
 
   vi.restoreAllMocks()
 })
@@ -68,10 +69,10 @@ it('deletes activity', async () => {
     .find('button')
     .trigger('click')
 
-  expect(resetTimelineItemActivities)
-    .toBeCalledTimes(1)
-    .toBeCalledWith(timelineItems.timelineItems.value, activity)
-  expect(deleteActivity).toBeCalledTimes(1).toBeCalledWith(activity)
+  expect(resetTimelineItemActivities).toBeCalledTimes(1)
+  expect(resetTimelineItemActivities).toBeCalledWith(timelineItems.timelineItems.value, activity)
+  expect(deleteActivity).toBeCalledTimes(1)
+  expect(deleteActivity).toBeCalledWith(activity)
 
   vi.restoreAllMocks()
 })
