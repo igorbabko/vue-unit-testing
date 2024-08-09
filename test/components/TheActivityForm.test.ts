@@ -42,3 +42,28 @@ it('disables submit button after form submission', async () => {
 
   expect(wrapper.find('button').attributes()).toHaveProperty('disabled')
 })
+
+it('clears input after form submission', async () => {
+  const wrapper = shallowMount(TheActivityForm)
+
+  await wrapper.find('input').setValue('Reading')
+
+  expect(wrapper.find('input').element.value).toBe('Reading')
+
+  await wrapper.find('form').trigger('submit')
+
+  expect(wrapper.find('input').element.value).toBe('')
+})
+
+it('scrolls page to the bottom after form submission', async () => {
+  const scrollToSpy = vi.spyOn(window, 'scrollTo')
+  const wrapper = shallowMount(TheActivityForm)
+
+  await wrapper.find('input').setValue('Reading')
+  await wrapper.find('form').trigger('submit')
+
+  expect(scrollToSpy).toBeCalledTimes(1)
+  expect(scrollToSpy).toBeCalledWith(0, document.body.scrollHeight)
+
+  vi.restoreAllMocks()
+})
