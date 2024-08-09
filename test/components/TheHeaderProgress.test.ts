@@ -3,6 +3,7 @@ import { expect, it, vi } from 'vitest'
 import { computed } from 'vue'
 import TheHeaderProgress from '../../src/components/TheHeaderProgress.vue'
 import { MEDIUM_PERCENT } from '../../src/constants'
+import * as router from '../../src/router'
 import { PageName, ProgressColorClass } from '../../src/types'
 
 vi.mock('../../src/composables/total-progress', () => {
@@ -22,4 +23,19 @@ it('has href attribute with progress page hash', () => {
 
 it('shows current progress', () => {
   expect(shallowMount(TheHeaderProgress).text()).toContain(`Progress: ${MEDIUM_PERCENT}%`)
+})
+
+it('uses proper progress indicator color', () => {
+  expect(shallowMount(TheHeaderProgress).html()).toContain(ProgressColorClass.BLUE)
+})
+
+it('navigates to progress page on click', () => {
+  const navigateSpy = vi.spyOn(router, 'navigate')
+
+  shallowMount(TheHeaderProgress).trigger('click')
+
+  expect(navigateSpy).toBeCalledTimes(1)
+  expect(navigateSpy).toBeCalledWith(PageName.PROGRESS)
+
+  vi.restoreAllMocks()
 })
