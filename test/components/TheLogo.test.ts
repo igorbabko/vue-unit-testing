@@ -7,7 +7,7 @@ import * as timelineItems from '../../src/timeline-items'
 import { IconName, PageName } from '../../src/types'
 
 it('renders logo', () => {
-  expect(shallowMount(TheLogo).findComponent(BaseIcon).vm.name).toBe(IconName.CLOCK)
+  expect(shallowMount(TheLogo).findComponent(BaseIcon).props('name')).toBe(IconName.CLOCK)
   // expect(wrapper.findComponent(BaseIcon).findComponent(ClockIcon).exists()).toBe(true)
 })
 

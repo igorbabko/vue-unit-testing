@@ -17,7 +17,7 @@ it('renders nav item', () => {
   const wrapper = shallowMountNavItem(timelineNavItem)
 
   expect(wrapper.text()).toContain(timelineNavItem.page)
-  expect(wrapper.findComponent(BaseIcon).vm.name).toEqual(timelineNavItem.icon)
+  expect(wrapper.findComponent(BaseIcon).props('name')).toEqual(timelineNavItem.icon)
   expect(wrapper.find('a').attributes('href')).toBe(`#${timelineNavItem.page}`)
 })
 

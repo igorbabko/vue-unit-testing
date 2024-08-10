@@ -34,10 +34,12 @@ function getActivitySelectOptions() {
 it('renders timeline item', () => {
   const wrapper = shallowMountTimelineItem()
 
-  expect(wrapper.findComponent(TimelineHour).vm.hour).toBe(timelineItem.hour)
-  expect(wrapper.findComponent(BaseSelect as any).vm.selected).toBe(timelineItem.activityId)
-  expect(wrapper.findComponent(BaseSelect as any).vm.options).toEqual(getActivitySelectOptions())
-  expect(wrapper.findComponent(TimelineStopwatch).vm.timelineItem).toEqual(timelineItem)
+  expect(wrapper.findComponent(TimelineHour).props('hour')).toBe(timelineItem.hour)
+  expect(wrapper.findComponent(BaseSelect as any).props('selected')).toBe(timelineItem.activityId)
+  expect(wrapper.findComponent(BaseSelect as any).props('options')).toEqual(
+    getActivitySelectOptions()
+  )
+  expect(wrapper.findComponent(TimelineStopwatch).props('timelineItem')).toEqual(timelineItem)
 })
 
 it('updates timeline item when selecting activity', () => {

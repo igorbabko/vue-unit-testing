@@ -28,8 +28,8 @@ function mountActivityItem(secondsToComplete = 0) {
 it('has delete button', () => {
   const wrapper = mountActivityItem()
 
-  expect(wrapper.findComponent(BaseButton).vm.type).toBe(ButtonType.DANGER)
-  expect(wrapper.findComponent(BaseIcon).vm.name).toBe(IconName.TRASH)
+  expect(wrapper.findComponent(BaseButton).props('type')).toBe(ButtonType.DANGER)
+  expect(wrapper.findComponent(BaseIcon).props('name')).toBe(IconName.TRASH)
 })
 
 it('deletes activity', () => {
@@ -55,8 +55,8 @@ it('shows activity name', () => {
 it('has seconds to complete select', () => {
   const baseSelectWrapper = mountActivityItem(SECONDS_IN_HOUR * 1).findComponent(BaseSelect as any)
 
-  expect(baseSelectWrapper.vm.options).toBe(PERIOD_SELECT_OPTIONS)
-  expect(baseSelectWrapper.vm.selected).toBe(SECONDS_IN_HOUR * 1)
+  expect(baseSelectWrapper.props('options')).toBe(PERIOD_SELECT_OPTIONS)
+  expect(baseSelectWrapper.props('selected')).toBe(SECONDS_IN_HOUR * 1)
 })
 
 it('updates seconds to complete', async () => {
@@ -91,7 +91,9 @@ it('updates seconds to complete to zero if none is selected', () => {
 
 it('has remaining activity seconds', () => {
   expect(
-    mountActivityItem(SECONDS_IN_HOUR * 1).findComponent(RemainingActivitySeconds).vm.activity
+    mountActivityItem(SECONDS_IN_HOUR * 1)
+      .findComponent(RemainingActivitySeconds)
+      .props('activity')
   ).toEqual(activity)
 })
 

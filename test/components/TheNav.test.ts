@@ -8,6 +8,6 @@ it('has all nav items', () => {
   const wrapper = shallowMount(TheNav)
 
   NAV_ITEMS.forEach((navItem, i) => {
-    expect(wrapper.findAllComponents(NavItem)[i].vm.navItem).toEqual(navItem)
+    expect(wrapper.findAllComponents(NavItem)[i].props('navItem')).toEqual(navItem)
   })
 })

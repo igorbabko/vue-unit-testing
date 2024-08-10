@@ -28,8 +28,8 @@ function mountSelect(mountOptions: MountOptions = {}, shallow = false) {
 it('renders select with reset button', () => {
   const wrapper = mountSelect()
 
-  expect(wrapper.findComponent(BaseButton).vm.type).toBe(ButtonType.NEUTRAL)
-  expect(wrapper.findComponent(BaseIcon).vm.name).toBe(IconName.X_MARK)
+  expect(wrapper.findComponent(BaseButton).props('type')).toBe(ButtonType.NEUTRAL)
+  expect(wrapper.findComponent(BaseIcon).props('name')).toBe(IconName.X_MARK)
 })
 
 it('renders select with placeholder', () => {
