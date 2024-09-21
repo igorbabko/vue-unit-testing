@@ -8,14 +8,14 @@ import { IconName, PageName } from '../../src/types'
 
 it('renders logo', () => {
   expect(shallowMount(TheLogo).findComponent(BaseIcon).props('name')).toBe(IconName.CLOCK)
-  // expect(wrapper.findComponent(BaseIcon).findComponent(ClockIcon).exists()).toBe(true)
+  // expect(mount(TheLogo).findComponent(BaseIcon).findComponent(ClockIcon).exists()).toBe(true)
 })
 
 it('has href attribute with timeline page hash', () => {
   expect(shallowMount(TheLogo).attributes('href')).toBe(`#${PageName.TIMELINE}`)
 })
 
-it('scrolls page to the top on click if timeline page is open', () => {
+it('scrolls page to current hour on click if timeline page is open', () => {
   const scrollToCurrentHour = vi.spyOn(timelineItems, 'scrollToCurrentHour')
 
   router.currentPage.value = PageName.TIMELINE
