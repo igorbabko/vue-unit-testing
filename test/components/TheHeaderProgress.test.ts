@@ -36,12 +36,12 @@ it('uses proper progress color', () => {
 })
 
 it('navigates to the progress page on click', () => {
-  const navigate = vi.spyOn(router, 'navigate')
+  const navigateSpy = vi.spyOn(router, 'navigate')
 
   shallowMount(TheHeaderProgress).trigger('click')
 
-  expect(navigate).toBeCalledTimes(1)
-  expect(navigate).toBeCalledWith(PageName.PROGRESS)
+  expect(navigateSpy).toBeCalledTimes(1)
+  expect(navigateSpy).toBeCalledWith(PageName.PROGRESS)
 })
 
 it('shows completion label when day is complete', () => {

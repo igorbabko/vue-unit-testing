@@ -16,27 +16,27 @@ it('has href attribute with timeline page hash', () => {
 })
 
 it('scrolls page to current hour on click if timeline page is open', () => {
-  const scrollToCurrentHour = vi.spyOn(timelineItems, 'scrollToCurrentHour')
+  const scrollToCurrentHourSpy = vi.spyOn(timelineItems, 'scrollToCurrentHour')
 
   router.currentPage.value = PageName.TIMELINE
 
   shallowMount(TheLogo).trigger('click')
 
-  expect(scrollToCurrentHour).toBeCalledTimes(1)
-  expect(scrollToCurrentHour).toBeCalledWith(true)
+  expect(scrollToCurrentHourSpy).toBeCalledTimes(1)
+  expect(scrollToCurrentHourSpy).toBeCalledWith(true)
 
   vi.restoreAllMocks()
 })
 
 it('navigates to timeline page on click if another page is open', () => {
-  const navigate = vi.spyOn(router, 'navigate')
+  const navigateSpy = vi.spyOn(router, 'navigate')
 
   router.currentPage.value = PageName.ACTIVITIES
 
   shallowMount(TheLogo).trigger('click')
 
-  expect(navigate).toBeCalledTimes(1)
-  expect(navigate).toBeCalledWith(PageName.TIMELINE)
+  expect(navigateSpy).toBeCalledTimes(1)
+  expect(navigateSpy).toBeCalledWith(PageName.TIMELINE)
 
   vi.restoreAllMocks()
 })

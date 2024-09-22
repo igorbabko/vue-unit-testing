@@ -66,7 +66,7 @@ it('has period select', () => {
 })
 
 it('updates seconds to complete field of activity', async () => {
-  const updateActivity = vi.spyOn(activities, 'updateActivity')
+  const updateActivitySpy = vi.spyOn(activities, 'updateActivity')
   const secondsToComplete = SECONDS_IN_HOUR * 1
   const updatedSecondsToComplete = SECONDS_IN_MINUTE * 30
   const activity = createActivity({ secondsToComplete })
@@ -78,8 +78,8 @@ it('updates seconds to complete field of activity', async () => {
   await wrapper.findComponent(BaseSelect as any).vm.$emit('select', updatedSecondsToComplete)
 
   expect(wrapper.text()).toContain(formatSecondsWithSign(-updatedSecondsToComplete))
-  expect(updateActivity).toBeCalledTimes(1)
-  expect(updateActivity).toBeCalledWith(
+  expect(updateActivitySpy).toBeCalledTimes(1)
+  expect(updateActivitySpy).toBeCalledWith(
     { ...activity, secondsToComplete: updatedSecondsToComplete },
     { secondsToComplete: updatedSecondsToComplete }
   )
@@ -88,15 +88,15 @@ it('updates seconds to complete field of activity', async () => {
 })
 
 it('updates seconds to complete field of activity to 0 if no period is selected', () => {
-  const updateActivity = vi.spyOn(activities, 'updateActivity')
+  const updateActivitySpy = vi.spyOn(activities, 'updateActivity')
   const secondsToComplete = 0
   const activity = createActivity()
   const wrapper = mountActivityItem(activity)
 
   wrapper.findComponent(BaseSelect as any).vm.$emit('select', null)
 
-  expect(updateActivity).toBeCalledTimes(1)
-  expect(updateActivity).toBeCalledWith({ ...activity, secondsToComplete }, { secondsToComplete })
+  expect(updateActivitySpy).toBeCalledTimes(1)
+  expect(updateActivitySpy).toBeCalledWith({ ...activity, secondsToComplete }, { secondsToComplete })
 
   vi.restoreAllMocks()
 })

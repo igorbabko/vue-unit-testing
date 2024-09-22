@@ -36,7 +36,7 @@ it('has hover state if nav item does not corresponds to current page', async () 
 })
 
 it('scrolls to current hour on click if nav item corresponds to timeline page and timeline page is open', () => {
-  const scrollToCurrentHour = vi.spyOn(timelineItems, 'scrollToCurrentHour')
+  const scrollToCurrentHourSpy = vi.spyOn(timelineItems, 'scrollToCurrentHour')
 
   router.currentPage.value = PageName.TIMELINE
 
@@ -44,14 +44,14 @@ it('scrolls to current hour on click if nav item corresponds to timeline page an
 
   wrapper.find('a').trigger('click')
 
-  expect(scrollToCurrentHour).toBeCalledTimes(1)
-  expect(scrollToCurrentHour).toBeCalledWith(true)
+  expect(scrollToCurrentHourSpy).toBeCalledTimes(1)
+  expect(scrollToCurrentHourSpy).toBeCalledWith(true)
 
   vi.restoreAllMocks()
 })
 
 it('navigates to corresponding page on click', () => {
-  const navigate = vi.spyOn(router, 'navigate')
+  const navigateSpy = vi.spyOn(router, 'navigate')
 
   router.currentPage.value = PageName.ACTIVITIES
 
@@ -59,8 +59,8 @@ it('navigates to corresponding page on click', () => {
 
   wrapper.find('a').trigger('click')
 
-  expect(navigate).toBeCalledTimes(1)
-  expect(navigate).toBeCalledWith(timelineNavItem.page)
+  expect(navigateSpy).toBeCalledTimes(1)
+  expect(navigateSpy).toBeCalledWith(timelineNavItem.page)
 
   vi.restoreAllMocks()
 })
