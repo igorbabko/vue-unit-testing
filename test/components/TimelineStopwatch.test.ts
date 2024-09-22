@@ -150,8 +150,7 @@ it('stops stopwatch', async () => {
   expect(stopTimelineItemTimerSpy).toBeCalledTimes(1)
   expect(stopTimelineItemTimerSpy).toBeCalledWith()
 
-  vi.restoreAllMocks()
-  vi.useRealTimers()
+  vi.restoreAllMocks().useRealTimers()
 })
 
 it('starts stopwatch', async () => {
@@ -175,8 +174,7 @@ it('starts stopwatch', async () => {
   expect(startTimelineItemTimerSpy).toBeCalledTimes(1)
   expect(startTimelineItemTimerSpy).toBeCalledWith(timelineItem)
 
-  vi.restoreAllMocks()
-  vi.useRealTimers()
+  vi.restoreAllMocks().useRealTimers()
 })
 
 it('changes play button to pause button when stopwatch is started', async () => {
