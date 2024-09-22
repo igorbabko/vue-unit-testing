@@ -9,20 +9,21 @@ import RemainingActivitySeconds from '../../src/components/RemainingActivitySeco
 import { PERIOD_SELECT_OPTIONS, SECONDS_IN_HOUR, SECONDS_IN_MINUTE } from '../../src/constants'
 import { formatSecondsWithSign } from '../../src/functions'
 import * as timelineItems from '../../src/timeline-items'
-import { ButtonType, IconName } from '../../src/types'
+import { Activity, ButtonType, IconName } from '../../src/types'
 
-const activity = {
-  id: '1',
-  name: 'Reading',
-  secondsToComplete: SECONDS_IN_HOUR * 1
+function mountActivityItem(activityOverrides: Partial<Activity> = {}) {
+  return mount(ActivityItem, {
+    props: { activity: createActivity(activityOverrides) }
+  })
 }
 
-function mountActivityItem(secondsToComplete = 0) {
-  return mount(ActivityItem, {
-    props: {
-      activity: { ...activity, secondsToComplete }
-    }
-  })
+function createActivity(overrides: Partial<Activity> = {}) {
+  return {
+    id: '',
+    name: '',
+    secondsToComplete: 0,
+    ...overrides
+  }
 }
 
 it('has delete button', () => {
@@ -33,55 +34,66 @@ it('has delete button', () => {
 })
 
 it('deletes activity', () => {
-  const resetTimelineItemActivities = vi.spyOn(timelineItems, 'resetTimelineItemActivities')
-  const deleteActivity = vi.spyOn(activities, 'deleteActivity')
+  const resetTimelineItemActivitiesSpy = vi.spyOn(timelineItems, 'resetTimelineItemActivities')
+  const deleteActivitySpy = vi.spyOn(activities, 'deleteActivity')
+  const activity = createActivity()
 
-  mountActivityItem(SECONDS_IN_HOUR * 1)
-    .find('button')
-    .trigger('click')
+  mountActivityItem(activity).find('button').trigger('click')
 
-  expect(resetTimelineItemActivities).toBeCalledTimes(1)
-  expect(resetTimelineItemActivities).toBeCalledWith(timelineItems.timelineItems.value, activity)
-  expect(deleteActivity).toBeCalledTimes(1)
-  expect(deleteActivity).toBeCalledWith(activity)
+  expect(resetTimelineItemActivitiesSpy).toBeCalledTimes(1)
+  expect(resetTimelineItemActivitiesSpy).toBeCalledWith(timelineItems.timelineItems.value, activity)
+  expect(deleteActivitySpy).toBeCalledTimes(1)
+  expect(deleteActivitySpy).toBeCalledWith(activity)
 
   vi.restoreAllMocks()
 })
 
 it('shows activity name', () => {
-  expect(mountActivityItem().text()).toContain('Reading')
+  const name = 'Reading'
+
+  expect(mountActivityItem({ name }).text()).toContain(name)
 })
 
-it('has seconds to complete select', () => {
-  const baseSelectWrapper = mountActivityItem(SECONDS_IN_HOUR * 1).findComponent(BaseSelect as any)
+it('has period select', () => {
+  const secondsToComplete = SECONDS_IN_HOUR * 1
+  const wrapper = mountActivityItem({ secondsToComplete })
 
-  expect(baseSelectWrapper.props('options')).toBe(PERIOD_SELECT_OPTIONS)
-  expect(baseSelectWrapper.props('selected')).toBe(SECONDS_IN_HOUR * 1)
+  expect(wrapper.findComponent(BaseSelect as any).props()).toEqual({
+    placeholder: 'hh:mm',
+    options: PERIOD_SELECT_OPTIONS,
+    selected: secondsToComplete
+  })
 })
 
-it('updates seconds to complete', async () => {
+it('updates seconds to complete field of activity', async () => {
   const updateActivity = vi.spyOn(activities, 'updateActivity')
-  const secondsToComplete = SECONDS_IN_MINUTE * 30
-  const wrapper = mountActivityItem(SECONDS_IN_HOUR * 1)
+  const secondsToComplete = SECONDS_IN_HOUR * 1
+  const updatedSecondsToComplete = SECONDS_IN_MINUTE * 30
+  const activity = createActivity({ secondsToComplete })
+  const wrapper = mountActivityItem(activity)
 
-  expect(wrapper.text()).toContain(formatSecondsWithSign(-SECONDS_IN_HOUR * 1))
+  expect(wrapper.text()).toContain(formatSecondsWithSign(-secondsToComplete))
 
-  // await wrapper.find('select').setValue(`${secondsToComplete}`)
-  await wrapper.findComponent(BaseSelect as any).vm.$emit('select', secondsToComplete)
+  // await wrapper.find('select').setValue(`${updatedSecondsToComplete}`)
+  await wrapper.findComponent(BaseSelect as any).vm.$emit('select', updatedSecondsToComplete)
 
-  expect(wrapper.text()).toContain(formatSecondsWithSign(-SECONDS_IN_MINUTE * 30))
+  expect(wrapper.text()).toContain(formatSecondsWithSign(-updatedSecondsToComplete))
   expect(updateActivity).toBeCalledTimes(1)
-  expect(updateActivity).toBeCalledWith({ ...activity, secondsToComplete }, { secondsToComplete })
+  expect(updateActivity).toBeCalledWith(
+    { ...activity, secondsToComplete: updatedSecondsToComplete },
+    { secondsToComplete: updatedSecondsToComplete }
+  )
 
   vi.restoreAllMocks()
 })
 
-it('updates seconds to complete to zero if none is selected', () => {
+it('updates seconds to complete field of activity to 0 if no period is selected', () => {
   const updateActivity = vi.spyOn(activities, 'updateActivity')
-  const wrapper = mountActivityItem(SECONDS_IN_HOUR * 1)
   const secondsToComplete = 0
+  const activity = createActivity()
+  const wrapper = mountActivityItem(activity)
 
-  wrapper.findComponent(BaseSelect as any).vm.$emit('select')
+  wrapper.findComponent(BaseSelect as any).vm.$emit('select', null)
 
   expect(updateActivity).toBeCalledTimes(1)
   expect(updateActivity).toBeCalledWith({ ...activity, secondsToComplete }, { secondsToComplete })
@@ -90,13 +102,14 @@ it('updates seconds to complete to zero if none is selected', () => {
 })
 
 it('has remaining activity seconds', () => {
-  expect(
-    mountActivityItem(SECONDS_IN_HOUR * 1)
-      .findComponent(RemainingActivitySeconds)
-      .props('activity')
-  ).toEqual(activity)
+  const activity = createActivity({ secondsToComplete: SECONDS_IN_HOUR * 1 })
+  const wrapper = mountActivityItem(activity)
+
+  expect(wrapper.findComponent(RemainingActivitySeconds).props('activity')).toEqual(activity)
 })
 
-it('does not have remaining activity seconds if seconds to complete is 0', () => {
-  expect(mountActivityItem(0).findComponent(RemainingActivitySeconds).exists()).toBe(false)
+it('does not have remaining activity seconds if seconds to complete field of activity = 0', () => {
+  const wrapper = mountActivityItem({ secondsToComplete: 0 })
+
+  expect(wrapper.findComponent(RemainingActivitySeconds).exists()).toBe(false)
 })
