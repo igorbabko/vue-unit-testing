@@ -4,6 +4,8 @@ import * as activities from '../../src/activities'
 import ActivityItem from '../../src/components/ActivityItem.vue'
 import BaseButton from '../../src/components/BaseButton.vue'
 import BaseIcon from '../../src/components/BaseIcon.vue'
+import BaseSelect from '../../src/components/BaseSelect.vue'
+import { PERIOD_SELECT_OPTIONS, SECONDS_IN_HOUR } from '../../src/constants'
 import * as timelineItems from '../../src/timeline-items'
 import { Activity, ButtonType, IconName } from '../../src/types'
 
@@ -50,4 +52,16 @@ it('shows activity name', () => {
   const name = 'Reading'
 
   expect(mountActivityItem({ name }).text()).toContain(name)
+})
+
+it('has period select', () => {
+  const secondsToComplete = SECONDS_IN_HOUR * 1
+
+  const wrapper = mountActivityItem({ secondsToComplete })
+
+  expect(wrapper.findComponent(BaseSelect as any).props()).toEqual({
+    placeholder: 'hh:mm',
+    options: PERIOD_SELECT_OPTIONS,
+    selected: secondsToComplete
+  })
 })
