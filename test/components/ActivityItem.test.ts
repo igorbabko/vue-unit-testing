@@ -5,6 +5,7 @@ import ActivityItem from '../../src/components/ActivityItem.vue'
 import BaseButton from '../../src/components/BaseButton.vue'
 import BaseIcon from '../../src/components/BaseIcon.vue'
 import BaseSelect from '../../src/components/BaseSelect.vue'
+import RemainingActivitySeconds from '../../src/components/RemainingActivitySeconds.vue'
 import { PERIOD_SELECT_OPTIONS, SECONDS_IN_HOUR } from '../../src/constants'
 import { formatSecondsWithSign } from '../../src/functions'
 import * as timelineItems from '../../src/timeline-items'
@@ -101,4 +102,18 @@ it('updates seconds to complete field of activity to 0 if no period is selected'
     { secondsToComplete: updatedSecondsToComplete }
   )
   vi.restoreAllMocks()
+})
+
+it('shows remaining activity seconds', () => {
+  const activity = createActivity({ secondsToComplete: SECONDS_IN_HOUR * 1 })
+
+  const wrapper = mountActivityItem(activity)
+
+  expect(wrapper.findComponent(RemainingActivitySeconds).props('activity')).toEqual(activity)
+})
+
+it('does not show remaining activity seconds if seconds to complete field of activity = 0', () => {
+  const wrapper = mountActivityItem({ secondsToComplete: 0 })
+
+  expect(wrapper.findComponent(RemainingActivitySeconds).exists()).toBe(false)
 })
