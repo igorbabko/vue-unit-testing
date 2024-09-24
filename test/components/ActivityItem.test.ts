@@ -85,3 +85,20 @@ it('updates seconds to complete field of activity', async () => {
   )
   vi.restoreAllMocks()
 })
+
+it('updates seconds to complete field of activity to 0 if no period is selected', () => {
+  const updateActivitySpy = vi.spyOn(activities, 'updateActivity')
+  const secondsToComplete = SECONDS_IN_HOUR * 1
+  const updatedSecondsToComplete = 0
+  const activity = createActivity({ secondsToComplete })
+  const wrapper = mountActivityItem(activity)
+
+  wrapper.findComponent(BaseSelect as any).vm.$emit('select', null)
+
+  expect(updateActivitySpy).toBeCalledTimes(1)
+  expect(updateActivitySpy).toBeCalledWith(
+    { ...activity, secondsToComplete: updatedSecondsToComplete },
+    { secondsToComplete: updatedSecondsToComplete }
+  )
+  vi.restoreAllMocks()
+})
