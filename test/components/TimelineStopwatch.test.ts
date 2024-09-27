@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils'
+import { shallowMount, VueWrapper } from '@vue/test-utils'
 import { expect, it, vi } from 'vitest'
 import BaseButton from '../../src/components/BaseButton.vue'
 import BaseIcon from '../../src/components/BaseIcon.vue'
@@ -10,7 +10,29 @@ import * as timelineItemTimer from '../../src/timeline-item-timer'
 import * as timelineItems from '../../src/timeline-items'
 import { ButtonType, IconName, type Hour, type TimelineItem } from '../../src/types'
 
-function getTimelineItem(overrides?: Partial<TimelineItem>): TimelineItem {
+function shallowMountTimelineStopwatch(timelineItemOverrides: Partial<TimelineItem> = {}) {
+  const timelineItem = isTimelineItem(timelineItemOverrides)
+    ? timelineItemOverrides
+    : createTimelineItem(timelineItemOverrides)
+
+  timelineItems.timelineItems.value = [timelineItem]
+
+  return shallowMount(TimelineStopwatch, {
+    global: { renderStubDefaultSlot: true },
+    props: { timelineItem }
+  })
+}
+
+function isTimelineItem(object: Partial<TimelineItem>): object is TimelineItem {
+  return (
+    'hour' in object &&
+    'activityId' in object &&
+    'activitySeconds' in object &&
+    'isActive' in object
+  )
+}
+
+function createTimelineItem(overrides: Partial<TimelineItem> = {}): TimelineItem {
   return {
     hour: 0,
     activityId: null,
@@ -20,112 +42,120 @@ function getTimelineItem(overrides?: Partial<TimelineItem>): TimelineItem {
   }
 }
 
+async function clickResetButton(wrapper: VueWrapper) {
+  await wrapper.findAllComponents(BaseButton)[0].vm.$emit('click')
+}
+
+async function clickPlayButton(wrapper: VueWrapper) {
+  await wrapper.findAllComponents(BaseButton)[1].vm.$emit('click')
+}
+
+async function clickPauseButton(wrapper: VueWrapper) {
+  await wrapper.findAllComponents(BaseButton)[1].vm.$emit('click')
+}
+
+function assertPlayButtonVisible(wrapper: VueWrapper) {
+  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.SUCCESS)
+  expect(wrapper.findAllComponents(BaseIcon)[1].props('name')).toBe(IconName.PLAY)
+}
+
+function assertPauseButtonVisible(wrapper: VueWrapper) {
+  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.WARNING)
+  expect(wrapper.findAllComponents(BaseIcon)[1].props('name')).toBe(IconName.PAUSE)
+}
+
+function assertResetButtonVisible(wrapper: VueWrapper) {
+  expect(wrapper.findAllComponents(BaseButton)[0].props('type')).toBe(ButtonType.DANGER)
+  expect(wrapper.findAllComponents(BaseIcon)[0].props('name')).toBe(IconName.ARROW_PATH)
+}
+
+function assertPlayButtonEnabled(wrapper: VueWrapper) {
+  expect(wrapper.findAllComponents(BaseButton)[1].attributes('disabled')).toBe('false')
+}
+
+function assertPlayButtonDisabled(wrapper: VueWrapper) {
+  expect(wrapper.findAllComponents(BaseButton)[1].attributes('disabled')).toBe('true')
+}
+
+function assertResetButtonEnabled(wrapper: VueWrapper) {
+  expect(wrapper.findAllComponents(BaseButton)[0].attributes('disabled')).toBe('false')
+}
+
+function assertResetButtonDisabled(wrapper: VueWrapper) {
+  expect(wrapper.findAllComponents(BaseButton)[0].attributes('disabled')).toBe('true')
+}
+
+function assertFormattedActivitySeconds(wrapper: VueWrapper, activitySeconds: number) {
+  expect(wrapper.text()).toContain(formatSeconds(activitySeconds))
+}
+
 it('shows formatted activity seconds of timeline item', () => {
   const activitySeconds = MILLISECONDS_IN_SECOND * 10
 
-  const wrapper = shallowMount(TimelineStopwatch, {
-    props: { timelineItem: getTimelineItem({ activitySeconds }) }
-  })
-
-  expect(wrapper.text()).toContain(formatSeconds(activitySeconds))
+  assertFormattedActivitySeconds(
+    shallowMountTimelineStopwatch({ activitySeconds }),
+    activitySeconds
+  )
 })
 
 it('has reset button disabled if timeline item has activity seconds = 0', () => {
-  const wrapper = shallowMount(TimelineStopwatch, {
-    global: { renderStubDefaultSlot: true },
-    props: { timelineItem: getTimelineItem({ activitySeconds: 0 }) }
-  })
+  const wrapper = shallowMountTimelineStopwatch({ activitySeconds: 0 })
 
-  expect(wrapper.findAllComponents(BaseButton)[0].props('type')).toBe(ButtonType.DANGER)
-  expect(wrapper.findAllComponents(BaseIcon)[0].props('name')).toBe(IconName.ARROW_PATH)
-  expect(wrapper.findAllComponents(BaseButton)[0].attributes('disabled')).toBe('true')
+  assertResetButtonVisible(wrapper)
+  assertResetButtonDisabled(wrapper)
 })
 
 it('has reset button enabled if timeline item has activity seconds > 0', () => {
-  const wrapper = shallowMount(TimelineStopwatch, {
-    global: { renderStubDefaultSlot: true },
-    props: { timelineItem: getTimelineItem({ activitySeconds: 3600 }) }
-  })
+  const wrapper = shallowMountTimelineStopwatch({ activitySeconds: MILLISECONDS_IN_SECOND * 10 })
 
-  expect(wrapper.findAllComponents(BaseButton)[0].props('type')).toBe(ButtonType.DANGER)
-  expect(wrapper.findAllComponents(BaseIcon)[0].props('name')).toBe(IconName.ARROW_PATH)
-  expect(wrapper.findAllComponents(BaseButton)[0].attributes('disabled')).toBe('false')
+  assertResetButtonVisible(wrapper)
+  assertResetButtonEnabled(wrapper)
 })
 
 it('has pause button if timeline item is active', () => {
-  const activeTimelineItem = getTimelineItem({ isActive: true })
-  timelineItems.timelineItems.value = [activeTimelineItem]
-
-  const wrapper = shallowMount(TimelineStopwatch, {
-    global: { renderStubDefaultSlot: true },
-    props: { timelineItem: activeTimelineItem }
-  })
-
-  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.WARNING)
-  expect(wrapper.findAllComponents(BaseIcon)[1].props('name')).toBe(IconName.PAUSE)
+  assertPauseButtonVisible(shallowMountTimelineStopwatch({ isActive: true }))
 })
 
 it('has play button if timeline item is inactive', () => {
-  const inactiveTimelineItem = getTimelineItem({ isActive: false })
-  timelineItems.timelineItems.value = [inactiveTimelineItem]
-
-  const wrapper = shallowMount(TimelineStopwatch, {
-    global: { renderStubDefaultSlot: true },
-    props: { timelineItem: inactiveTimelineItem }
-  })
-
-  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.SUCCESS)
-  expect(wrapper.findAllComponents(BaseIcon)[1].props('name')).toBe(IconName.PLAY)
+  assertPlayButtonVisible(shallowMountTimelineStopwatch({ isActive: false }))
 })
 
 it('has play button enabled if timeline item hour is current', () => {
-  const currentHour = 8
-  now.value = new Date(`2024-04-10 0${currentHour}:00:00`)
+  const hour = 8
+  now.value = new Date(`2024-04-10 0${hour}:00:00`)
 
-  const wrapper = shallowMount(TimelineStopwatch, {
-    props: { timelineItem: getTimelineItem({ hour: currentHour }) }
-  })
+  const wrapper = shallowMountTimelineStopwatch({ hour })
 
-  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.SUCCESS)
-  expect(wrapper.findAllComponents(BaseButton)[1].attributes('disabled')).toBe('false')
+  assertPlayButtonVisible(wrapper)
+  assertPlayButtonEnabled(wrapper)
 })
 
 it('has play button disabled if timeline item hour is not current', () => {
   const currentHour = 8
   now.value = new Date(`2024-04-10 0${currentHour}:00:00`)
 
-  const wrapper = shallowMount(TimelineStopwatch, {
-    props: {
-      timelineItem: getTimelineItem({ hour: (currentHour + 1) as Hour })
-    }
-  })
+  const wrapper = shallowMountTimelineStopwatch({ hour: (currentHour + 1) as Hour })
 
-  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.SUCCESS)
-  expect(wrapper.findAllComponents(BaseButton)[1].attributes('disabled')).toBe('true')
+  assertPlayButtonVisible(wrapper)
+  assertPlayButtonDisabled(wrapper)
 })
 
 it('resets stopwatch', async () => {
   const resetTimelineItemTimerSpy = vi.spyOn(timelineItemTimer, 'resetTimelineItemTimer')
-  const timelineItem = getTimelineItem({
+  const timelineItem = createTimelineItem({
     isActive: true,
     activitySeconds: MILLISECONDS_IN_SECOND * 10
   })
+  const wrapper = shallowMountTimelineStopwatch(timelineItem)
+  assertFormattedActivitySeconds(wrapper, timelineItem.activitySeconds)
+  assertResetButtonEnabled(wrapper)
 
-  const wrapper = shallowMount(TimelineStopwatch, {
-    props: { timelineItem }
-  })
+  await clickResetButton(wrapper)
 
-  expect(wrapper.text()).toContain(formatSeconds(timelineItem.activitySeconds))
-  expect(wrapper.findAllComponents(BaseButton)[0].attributes('disabled')).toBe('false')
-
-  await wrapper.findAllComponents(BaseButton)[0].vm.$emit('click')
-
-  expect(wrapper.text()).toContain(formatSeconds(0))
-  expect(wrapper.findAllComponents(BaseButton)[0].attributes('disabled')).toBe('true')
-
+  assertFormattedActivitySeconds(wrapper, 0)
+  assertResetButtonDisabled(wrapper)
   expect(resetTimelineItemTimerSpy).toBeCalledTimes(1)
   expect(resetTimelineItemTimerSpy).toBeCalledWith(timelineItem)
-
   vi.restoreAllMocks()
 })
 
@@ -133,23 +163,15 @@ it('stops stopwatch', async () => {
   vi.useFakeTimers()
   const stopTimelineItemTimerSpy = vi.spyOn(timelineItemTimer, 'stopTimelineItemTimer')
   const activitySeconds = 5
-  const timelineItem = getTimelineItem({ activitySeconds, isActive: true })
-  timelineItems.timelineItems.value = [timelineItem]
+  const wrapper = shallowMountTimelineStopwatch({ activitySeconds, isActive: true })
+  assertFormattedActivitySeconds(wrapper, activitySeconds)
 
-  const wrapper = shallowMount(TimelineStopwatch, {
-    props: { timelineItem }
-  })
-
-  expect(wrapper.text()).toContain(formatSeconds(activitySeconds))
-
-  wrapper.findAllComponents(BaseButton)[1].vm.$emit('click')
+  await clickPauseButton(wrapper)
   await vi.advanceTimersByTime(MILLISECONDS_IN_SECOND * 10)
 
-  expect(wrapper.text()).toContain(formatSeconds(activitySeconds))
-
+  assertFormattedActivitySeconds(wrapper, activitySeconds)
   expect(stopTimelineItemTimerSpy).toBeCalledTimes(1)
   expect(stopTimelineItemTimerSpy).toBeCalledWith()
-
   vi.restoreAllMocks().useRealTimers()
 })
 
@@ -157,76 +179,42 @@ it('starts stopwatch', async () => {
   vi.useFakeTimers()
   const startTimelineItemTimerSpy = vi.spyOn(timelineItemTimer, 'startTimelineItemTimer')
   const activitySeconds = 0
-  const timelineItem = getTimelineItem({ activitySeconds, isActive: false })
-  timelineItems.timelineItems.value = [timelineItem]
+  const timelineItem = createTimelineItem({ activitySeconds, isActive: false })
+  const wrapper = shallowMountTimelineStopwatch(timelineItem)
+  assertFormattedActivitySeconds(wrapper, 0)
 
-  const wrapper = shallowMount(TimelineStopwatch, {
-    props: { timelineItem }
-  })
-
-  expect(wrapper.text()).toContain(formatSeconds(0))
-
-  wrapper.findAllComponents(BaseButton)[1].vm.$emit('click')
+  await clickPlayButton(wrapper)
   await vi.advanceTimersByTime(MILLISECONDS_IN_SECOND * 5)
 
-  expect(wrapper.text()).toContain(formatSeconds(activitySeconds + 5))
-
+  assertFormattedActivitySeconds(wrapper, activitySeconds + 5)
   expect(startTimelineItemTimerSpy).toBeCalledTimes(1)
   expect(startTimelineItemTimerSpy).toBeCalledWith(timelineItem)
-
   vi.restoreAllMocks().useRealTimers()
 })
 
 it('changes play button to pause button when stopwatch is started', async () => {
-  const timelineItem = getTimelineItem({ isActive: false })
-  timelineItems.timelineItems.value = [timelineItem]
+  const wrapper = shallowMountTimelineStopwatch({ isActive: false })
+  assertPlayButtonVisible(wrapper)
 
-  const wrapper = shallowMount(TimelineStopwatch, {
-    global: { renderStubDefaultSlot: true },
-    props: { timelineItem }
-  })
+  await clickPlayButton(wrapper)
 
-  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.SUCCESS)
-  expect(wrapper.findAllComponents(BaseIcon)[1].props('name')).toBe(IconName.PLAY)
-
-  await wrapper.findAllComponents(BaseButton)[1].vm.$emit('click')
-
-  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.WARNING)
-  expect(wrapper.findAllComponents(BaseIcon)[1].props('name')).toBe(IconName.PAUSE)
+  assertPauseButtonVisible(wrapper)
 })
 
 it('changes pause button to play button when stopwatch is paused', async () => {
-  const timelineItem = getTimelineItem({ isActive: true })
-  timelineItems.timelineItems.value = [timelineItem]
+  const wrapper = shallowMountTimelineStopwatch({ isActive: true })
+  assertPauseButtonVisible(wrapper)
 
-  const wrapper = shallowMount(TimelineStopwatch, {
-    global: { renderStubDefaultSlot: true },
-    props: { timelineItem }
-  })
+  await clickPauseButton(wrapper)
 
-  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.WARNING)
-  expect(wrapper.findAllComponents(BaseIcon)[1].props('name')).toBe(IconName.PAUSE)
-
-  await wrapper.findAllComponents(BaseButton)[1].vm.$emit('click')
-
-  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.SUCCESS)
-  expect(wrapper.findAllComponents(BaseIcon)[1].props('name')).toBe(IconName.PLAY)
+  assertPlayButtonVisible(wrapper)
 })
 
 it('changes pause button to play button when stopwatch is reset', async () => {
-  const timelineItem = getTimelineItem({ isActive: true })
-  timelineItems.timelineItems.value = [timelineItem]
+  const wrapper = shallowMountTimelineStopwatch({ isActive: true })
+  assertPauseButtonVisible(wrapper)
 
-  const wrapper = shallowMount(TimelineStopwatch, {
-    global: { renderStubDefaultSlot: true },
-    props: { timelineItem }
-  })
+  await clickResetButton(wrapper)
 
-  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.WARNING)
-  expect(wrapper.findAllComponents(BaseIcon)[1].props('name')).toBe(IconName.PAUSE)
-
-  await wrapper.findAllComponents(BaseButton)[0].vm.$emit('click')
-
-  expect(wrapper.findAllComponents(BaseButton)[1].props('type')).toBe(ButtonType.SUCCESS)
-  expect(wrapper.findAllComponents(BaseIcon)[1].props('name')).toBe(IconName.PLAY)
+  assertPlayButtonVisible(wrapper)
 })
