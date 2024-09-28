@@ -6,6 +6,7 @@ import { NAV_ITEMS } from '../../src/constants'
 import * as router from '../../src/router'
 import * as timelineItems from '../../src/timeline-items'
 import { PageName } from '../../src/types'
+import { assertSpy } from '../utils'
 
 const timelineNavItem = NAV_ITEMS[0]
 
@@ -38,8 +39,7 @@ it('scrolls to current hour on click if nav item corresponds to timeline page an
 
   shallowMountTimelineNavItem().find('a').trigger('click')
 
-  expect(scrollToCurrentHourSpy).toBeCalledTimes(1)
-  expect(scrollToCurrentHourSpy).toBeCalledWith(true)
+  assertSpy(scrollToCurrentHourSpy, [true])
   vi.restoreAllMocks()
 })
 
@@ -49,7 +49,6 @@ it('navigates to corresponding page on click', () => {
 
   shallowMountTimelineNavItem().find('a').trigger('click')
 
-  expect(navigateSpy).toBeCalledTimes(1)
-  expect(navigateSpy).toBeCalledWith(timelineNavItem.page)
+  assertSpy(navigateSpy, [timelineNavItem.page])
   vi.restoreAllMocks()
 })

@@ -10,6 +10,7 @@ import { PERIOD_SELECT_OPTIONS, SECONDS_IN_HOUR, SECONDS_IN_MINUTE } from '../..
 import { formatSecondsWithSign } from '../../src/functions'
 import * as timelineItems from '../../src/timeline-items'
 import { Activity, ButtonType, IconName } from '../../src/types'
+import { assertSpy } from '../utils'
 
 function mountActivityItem(activityOverrides: Partial<Activity> = {}) {
   return mount(ActivityItem, {
@@ -40,10 +41,8 @@ it('deletes activity', () => {
 
   mountActivityItem(activity).find('button').trigger('click')
 
-  expect(resetTimelineItemActivitiesSpy).toBeCalledTimes(1)
-  expect(resetTimelineItemActivitiesSpy).toBeCalledWith(timelineItems.timelineItems.value, activity)
-  expect(deleteActivitySpy).toBeCalledTimes(1)
-  expect(deleteActivitySpy).toBeCalledWith(activity)
+  assertSpy(resetTimelineItemActivitiesSpy, [timelineItems.timelineItems.value, activity])
+  assertSpy(deleteActivitySpy, [activity])
 
   vi.restoreAllMocks()
 })
@@ -78,11 +77,10 @@ it('updates seconds to complete field of activity', async () => {
   await wrapper.findComponent(BaseSelect as any).vm.$emit('select', updatedSecondsToComplete)
 
   expect(wrapper.text()).toContain(formatSecondsWithSign(-updatedSecondsToComplete))
-  expect(updateActivitySpy).toBeCalledTimes(1)
-  expect(updateActivitySpy).toBeCalledWith(
+  assertSpy(updateActivitySpy, [
     { ...activity, secondsToComplete: updatedSecondsToComplete },
     { secondsToComplete: updatedSecondsToComplete }
-  )
+  ])
 
   vi.restoreAllMocks()
 })
@@ -95,8 +93,7 @@ it('updates seconds to complete field of activity to 0 if no period is selected'
 
   wrapper.findComponent(BaseSelect as any).vm.$emit('select', null)
 
-  expect(updateActivitySpy).toBeCalledTimes(1)
-  expect(updateActivitySpy).toBeCalledWith({ ...activity, secondsToComplete }, { secondsToComplete })
+  assertSpy(updateActivitySpy, [{ ...activity, secondsToComplete }, { secondsToComplete }])
 
   vi.restoreAllMocks()
 })

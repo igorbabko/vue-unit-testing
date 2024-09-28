@@ -7,6 +7,7 @@ import { useTotalProgress } from '../../src/composables/total-progress'
 import { HUNDRED_PERCENT, MEDIUM_PERCENT } from '../../src/constants'
 import * as router from '../../src/router'
 import { PageName, ProgressColorClass } from '../../src/types'
+import { assertSpy } from '../utils'
 
 vi.mock('../../src/composables/total-progress', () => {
   return {
@@ -40,8 +41,7 @@ it('navigates to the progress page on click', () => {
 
   shallowMount(TheHeaderProgress).trigger('click')
 
-  expect(navigateSpy).toBeCalledTimes(1)
-  expect(navigateSpy).toBeCalledWith(PageName.PROGRESS)
+  assertSpy(navigateSpy, [PageName.PROGRESS])
 })
 
 it('shows completion label when day is complete', () => {

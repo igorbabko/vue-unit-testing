@@ -9,6 +9,7 @@ import { now } from '../../src/time'
 import * as timelineItemTimer from '../../src/timeline-item-timer'
 import * as timelineItems from '../../src/timeline-items'
 import { ButtonType, IconName, type Hour, type TimelineItem } from '../../src/types'
+import { assertSpy } from '../utils'
 
 function shallowMountTimelineStopwatch(timelineItemOverrides: Partial<TimelineItem> = {}) {
   const timelineItem = isTimelineItem(timelineItemOverrides)
@@ -154,8 +155,7 @@ it('resets stopwatch', async () => {
 
   assertFormattedActivitySeconds(wrapper, 0)
   assertResetButtonDisabled(wrapper)
-  expect(resetTimelineItemTimerSpy).toBeCalledTimes(1)
-  expect(resetTimelineItemTimerSpy).toBeCalledWith(timelineItem)
+  assertSpy(resetTimelineItemTimerSpy, [timelineItem])
   vi.restoreAllMocks()
 })
 
@@ -170,8 +170,7 @@ it('stops stopwatch', async () => {
   await vi.advanceTimersByTime(MILLISECONDS_IN_SECOND * 10)
 
   assertFormattedActivitySeconds(wrapper, activitySeconds)
-  expect(stopTimelineItemTimerSpy).toBeCalledTimes(1)
-  expect(stopTimelineItemTimerSpy).toBeCalledWith()
+  assertSpy(stopTimelineItemTimerSpy)
   vi.restoreAllMocks().useRealTimers()
 })
 
@@ -187,8 +186,7 @@ it('starts stopwatch', async () => {
   await vi.advanceTimersByTime(MILLISECONDS_IN_SECOND * 5)
 
   assertFormattedActivitySeconds(wrapper, activitySeconds + 5)
-  expect(startTimelineItemTimerSpy).toBeCalledTimes(1)
-  expect(startTimelineItemTimerSpy).toBeCalledWith(timelineItem)
+  assertSpy(startTimelineItemTimerSpy, [timelineItem])
   vi.restoreAllMocks().useRealTimers()
 })
 

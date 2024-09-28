@@ -3,6 +3,7 @@ import { afterAll, describe, expect, it, vi } from 'vitest'
 import TimelineHour from '../../src/components/TimelineHour.vue'
 import * as timelineItems from '../../src/timeline-items'
 import { Hour } from '../../src/types'
+import { assertSpy } from '../utils'
 
 function shallowMountTimelineHour(hour: Hour) {
   return shallowMount(TimelineHour, {
@@ -20,8 +21,7 @@ it('scrolls to particular hour on click', () => {
 
   shallowMountTimelineHour(hour).trigger('click')
 
-  expect(scrollToHourSpy).toBeCalledTimes(1)
-  expect(scrollToHourSpy).toBeCalledWith(hour)
+  assertSpy(scrollToHourSpy, [hour])
 
   vi.restoreAllMocks()
 })

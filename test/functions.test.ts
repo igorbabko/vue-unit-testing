@@ -15,6 +15,7 @@ import {
   normalizeSelectValue
 } from '../src/functions'
 import { ProgressColorClass } from '../src/types'
+import { assertSpy } from './utils'
 
 describe('formatSecondsWithSign', () => {
   it.each([
@@ -74,6 +75,6 @@ it('generates id', () => {
   const randomSpy = vi.spyOn(Math, 'random').mockReturnValueOnce(10000)
 
   expect(id()).toBe('1s')
-  expect(nowSpy).toHaveBeenCalledTimes(1)
-  expect(randomSpy).toHaveBeenCalledTimes(1)
+  assertSpy(nowSpy)
+  assertSpy(randomSpy)
 })

@@ -6,6 +6,7 @@ import TimelineItem from '../../src/components/TimelineItem.vue'
 import TimelineStopwatch from '../../src/components/TimelineStopwatch.vue'
 import * as timelineItems from '../../src/timeline-items'
 import { SelectOption, TimelineItem as TimelineItemType } from '../../src/types'
+import { assertSpy } from '../utils'
 
 function shallowMountTimelineItem(overrides: Partial<TimelineItemType> = {}) {
   return shallowMount(TimelineItem, {
@@ -57,7 +58,6 @@ it('updates timeline item when selecting activity', () => {
     .findComponent(BaseSelect as any)
     .vm.$emit('select', activityId)
 
-  expect(updateTimelineItemSpy).toBeCalledTimes(1)
-  expect(updateTimelineItemSpy).toBeCalledWith({ ...timelineItem, activityId }, { activityId })
+  assertSpy(updateTimelineItemSpy, [{ ...timelineItem, activityId }, { activityId }])
   vi.restoreAllMocks()
 })
